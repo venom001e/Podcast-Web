@@ -1,4 +1,4 @@
-import { podcasts, type Podcast, type InsertPodcast, users } from "@shared/schema";
+import { podcasts, type Podcast, type InsertPodcast, users, type User } from "@shared/schema";
 import { db } from "./db";
 import { eq, like, or } from "drizzle-orm";
 
