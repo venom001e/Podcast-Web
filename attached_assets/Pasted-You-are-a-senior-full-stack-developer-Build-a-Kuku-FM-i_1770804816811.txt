@@ -1,0 +1,81 @@
+You are a senior full-stack developer.
+
+Build a Kuku FM–inspired podcast & audiobook web application using Next.js 14 (App Router).
+
+Tech Stack:
+- Next.js 14 with App Router
+- TypeScript
+- Tailwind CSS for UI
+- MongoDB (Mongoose) for database
+- Full-stack using Next.js API routes
+- Modern, clean, mobile-responsive UI
+
+Core Requirements:
+
+1. Pages:
+- Home page showing:
+  - Hero banner
+  - Trending podcasts
+  - Categories (Motivation, Stories, Business, Education)
+- Podcast detail page (/podcast/[id])
+- Login page
+- Signup page
+- Subscription page (UI only for now)
+
+2. Features:
+- User authentication (email & password)
+- Podcast listing from MongoDB
+- Podcast detail page with description
+- Audio streaming using HTML5 audio player
+- Sticky bottom audio player like Kuku FM
+- Premium & free podcast logic:
+  - If podcast is premium and user is not subscribed, lock audio and show “Subscribe to Unlock”
+  - Free podcasts play without restriction
+
+3. Database Models:
+- User:
+  - name
+  - email
+  - password (hashed)
+  - isSubscribed (boolean)
+- Podcast:
+  - title
+  - description
+  - thumbnail
+  - audioUrl
+  - category
+  - isPremium
+
+4. Backend:
+- MongoDB connection utility
+- API routes for:
+  - Auth (login/signup)
+  - Fetch podcasts
+  - Fetch single podcast by ID
+- Use server components where possible
+- Use client components only where needed (audio player, auth forms)
+
+5. UI/UX:
+- Clean modern UI inspired by Kuku FM
+- Dark + light friendly design
+- Cards for podcasts
+- Smooth hover effects
+- Mobile-first responsive layout
+
+6. Code Quality:
+- Proper folder structure
+- Reusable components
+- Comments where necessary
+- Environment variables for secrets
+- Ready to run locally or on Replit
+
+7. Output:
+- Provide full folder structure
+- Working code for pages, components, API routes, and models
+- No placeholders like “TODO”
+- The project should run with `npm run dev`
+
+Important:
+Do NOT copy Kuku FM branding, logo, or name.
+Use generic dummy data and a neutral project name.
+Focus on functionality and clean architecture.
