@@ -12,6 +12,9 @@ import Home from "@/pages/Home";
 import PodcastDetail from "@/pages/PodcastDetail";
 import Subscription from "@/pages/Subscription";
 import Search from "@/pages/Search";
+import AdminDashboard from "@/pages/AdminDashboard";
+import AdminPodcasts from "@/pages/AdminPodcasts";
+import AdminUsers from "@/pages/AdminUsers";
 
 function Router() {
   return (
@@ -21,7 +24,11 @@ function Router() {
       <Route path="/subscription" component={Subscription} />
       <Route path="/search" component={Search} />
       {/* For demo, profile redirects to home or login logic handled in nav */}
-      <Route path="/profile" component={Home} /> 
+      <Route path="/profile" component={Home} />
+      {/* Admin routes */}
+      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/podcasts" component={AdminPodcasts} />
+      <Route path="/admin/users" component={AdminUsers} />
       <Route component={NotFound} />
     </Switch>
   );
