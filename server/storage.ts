@@ -10,6 +10,13 @@ export interface IStorage {
   
   // User subscription operations
   updateUserSubscription(userId: string, isSubscribed: boolean): Promise<void>;
+
+  // Admin operations
+  getUsers(): Promise<User[]>;
+  updateUser(id: string, updates: Partial<User>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
+  updatePodcast(id: number, updates: Partial<Podcast>): Promise<Podcast>;
+  deletePodcast(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -43,6 +50,28 @@ export class DatabaseStorage implements IStorage {
     await db.update(users)
       .set({ isSubscribed })
       .where(eq(users.id, userId));
+  }
+
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User> {
+    const [user] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  async updatePodcast(id: number, updates: Partial<Podcast>): Promise<Podcast> {
+    const [podcast] = await db.update(podcasts).set(updates).where(eq(podcasts.id, id)).returning();
+    return podcast;
+  }
+
+  async deletePodcast(id: number): Promise<void> {
+    await db.delete(podcasts).where(eq(podcasts.id, id));
   }
 }
 

@@ -1,0 +1,112 @@
+You are a senior full-stack Next.js developer.
+
+I already have a working podcast web app built with:
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- MongoDB with Mongoose
+- API routes inside /app/api
+
+Now add a secure Admin Panel system.
+
+============================
+
+ADMIN REQUIREMENTS:
+
+1. Admin Role System:
+- Add role field in User model:
+  role: "user" | "admin"
+- Only admin users can access /admin routes
+- Protect admin routes using server-side check
+
+2. Admin Route:
+Create:
+- /admin (dashboard page)
+- /admin/podcasts
+- /admin/users
+
+If non-admin tries to access → redirect to home.
+
+============================
+
+ADMIN FEATURES:
+
+A) Dashboard (/admin)
+- Show total users count
+- Show total podcasts count
+- Show total premium podcasts count
+- Simple cards layout
+
+B) Manage Podcasts (/admin/podcasts)
+- List all podcasts
+- Add new podcast form:
+  - title
+  - description
+  - thumbnail URL
+  - audio URL
+  - category
+  - isPremium toggle
+- Edit podcast
+- Delete podcast
+
+C) Manage Users (/admin/users)
+- List all users
+- Show:
+  - name
+  - email
+  - role
+  - isSubscribed
+- Ability to:
+  - Change role (make admin)
+  - Toggle subscription status
+  - Delete user
+
+============================
+
+BACKEND:
+
+Create API routes:
+
+- GET /api/admin/stats
+- GET /api/admin/podcasts
+- POST /api/admin/podcasts
+- PUT /api/admin/podcasts/[id]
+- DELETE /api/admin/podcasts/[id]
+
+- GET /api/admin/users
+- PUT /api/admin/users/[id]
+- DELETE /api/admin/users/[id]
+
+All admin APIs must:
+- Check if logged-in user is admin
+- Return 403 if not admin
+
+============================
+
+UI DESIGN:
+
+- Clean modern dashboard UI
+- Sidebar navigation
+- Responsive layout
+- Tailwind CSS
+- Simple dark theme optional
+
+============================
+
+SECURITY:
+
+- Protect admin routes on server side
+- Never rely only on frontend protection
+- Use middleware or server session check
+
+============================
+
+OUTPUT:
+
+- Provide complete code for:
+  - Updated User model
+  - Admin pages
+  - Admin API routes
+  - Middleware if needed
+- Ensure project runs without breaking existing functionality.

@@ -1,10 +1,22 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
+import { setupAuth, registerAuthRoutes, authStorage } from "./replit_integrations/auth";
 import { insertPodcastSchema } from "@shared/schema";
+
+async function isAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const userId = (req.user as any).claims.sub;
+  const user = await authStorage.getUser(userId);
+  if (user?.role !== "admin") {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+  next();
+}
 
 export async function registerRoutes(
   httpServer: Server,
@@ -58,6 +70,63 @@ export async function registerRoutes(
     await storage.updateUserSubscription(userId, true);
     
     res.json({ isSubscribed: true });
+  });
+
+  // Admin Routes
+  app.get(api.admin.stats.path, isAdmin, async (req, res) => {
+    const allUsers = await storage.getUsers();
+    const allPodcasts = await storage.getPodcasts();
+    res.json({
+      totalUsers: allUsers.length,
+      totalPodcasts: allPodcasts.length,
+      totalPremiumPodcasts: allPodcasts.filter(p => p.isPremium).length,
+    });
+  });
+
+  app.get(api.admin.podcasts.list.path, isAdmin, async (req, res) => {
+    const podcasts = await storage.getPodcasts();
+    res.json(podcasts);
+  });
+
+  app.put(api.admin.podcasts.update.path, isAdmin, async (req, res) => {
+    try {
+      const input = api.admin.podcasts.update.input.parse(req.body);
+      const podcast = await storage.updatePodcast(Number(req.params.id), input);
+      res.json(podcast);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete(api.admin.podcasts.delete.path, isAdmin, async (req, res) => {
+    await storage.deletePodcast(Number(req.params.id));
+    res.status(204).end();
+  });
+
+  app.get(api.admin.users.list.path, isAdmin, async (req, res) => {
+    const users = await storage.getUsers();
+    res.json(users);
+  });
+
+  app.put(api.admin.users.update.path, isAdmin, async (req, res) => {
+    try {
+      const input = api.admin.users.update.input.parse(req.body);
+      const user = await storage.updateUser(req.params.id, input);
+      res.json(user);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete(api.admin.users.delete.path, isAdmin, async (req, res) => {
+    await storage.deleteUser(req.params.id);
+    res.status(204).end();
   });
 
   // Seed data if empty

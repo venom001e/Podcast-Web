@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertPodcastSchema, podcasts } from './schema';
+import { insertPodcastSchema, podcasts, users } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -10,6 +10,9 @@ export const errorSchemas = {
     message: z.string(),
   }),
   internal: z.object({
+    message: z.string(),
+  }),
+  forbidden: z.object({
     message: z.string(),
   }),
 };
@@ -35,8 +38,6 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
-    // For demo purposes, we might want to create podcasts via API, or just seed them.
-    // I'll add a create endpoint just in case, but primary usage is read.
     create: {
       method: 'POST' as const,
       path: '/api/podcasts' as const,
@@ -56,7 +57,82 @@ export const api = {
         401: errorSchemas.notFound, // unauthorized
       },
     }
-  }
+  },
+  admin: {
+    stats: {
+      method: 'GET' as const,
+      path: '/api/admin/stats' as const,
+      responses: {
+        200: z.object({
+          totalUsers: z.number(),
+          totalPodcasts: z.number(),
+          totalPremiumPodcasts: z.number(),
+        }),
+        403: errorSchemas.forbidden,
+      },
+    },
+    podcasts: {
+      list: {
+        method: 'GET' as const,
+        path: '/api/admin/podcasts' as const,
+        responses: {
+          200: z.array(z.custom<typeof podcasts.$inferSelect>()),
+          403: errorSchemas.forbidden,
+        },
+      },
+      update: {
+        method: 'PUT' as const,
+        path: '/api/admin/podcasts/:id' as const,
+        input: insertPodcastSchema.partial(),
+        responses: {
+          200: z.custom<typeof podcasts.$inferSelect>(),
+          403: errorSchemas.forbidden,
+          404: errorSchemas.notFound,
+        },
+      },
+      delete: {
+        method: 'DELETE' as const,
+        path: '/api/admin/podcasts/:id' as const,
+        responses: {
+          204: z.void(),
+          403: errorSchemas.forbidden,
+          404: errorSchemas.notFound,
+        },
+      },
+    },
+    users: {
+      list: {
+        method: 'GET' as const,
+        path: '/api/admin/users' as const,
+        responses: {
+          200: z.array(z.custom<typeof users.$inferSelect>()),
+          403: errorSchemas.forbidden,
+        },
+      },
+      update: {
+        method: 'PUT' as const,
+        path: '/api/admin/users/:id' as const,
+        input: z.object({
+          role: z.enum(["user", "admin"]).optional(),
+          isSubscribed: z.boolean().optional(),
+        }),
+        responses: {
+          200: z.custom<typeof users.$inferSelect>(),
+          403: errorSchemas.forbidden,
+          404: errorSchemas.notFound,
+        },
+      },
+      delete: {
+        method: 'DELETE' as const,
+        path: '/api/admin/users/:id' as const,
+        responses: {
+          204: z.void(),
+          403: errorSchemas.forbidden,
+          404: errorSchemas.notFound,
+        },
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
